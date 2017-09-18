@@ -1,0 +1,41 @@
+ext.springversion = "3.2.18.RELEASE"
+ext.junit = "junit:junit:4.12"
+ext.slf4j = 'org.slf4j:slf4j-api:1.7.21'
+ext.spring = [[group:'org.springframework', name: 'spring-aop', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-context', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-beans', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-core', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-web', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-expression', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-test', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-jdbc', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-jms', version: "${springversion}"],
+              [group:'org.springframework', name: 'spring-aop', version: "${springversion}"],
+              [group:'org.springframework.integration', name: 'spring-integration-core', version: "4.3.12.RELEASE"]]
+              
+ext.aspectj = [[group:'org.aspectj', name: 'aspectjweaver', version: "1.8.10"],
+              [group:'org.aspectj', name: 'aspectjrt', version: "1.8.10"]]
+              
+ext.servlet = [group:'javax.servlet', name:'servlet-api', version:'2.4']
+ext.log4j2 = [[group:'org.apache.logging.log4j', name: 'log4j-api', version: "2.3"],
+              [group:'org.apache.logging.log4j', name: 'log4j-core', version: "2.3"],
+              [group:'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "2.3"]]
+ext.camel = [[group:'org.apache.camel', name:'camel-core', version:'2.13.2'],
+             [group:'org.apache.camel', name:'camel-spring-integration', version:'2.13.2'],
+             [group:'org.apache.camel', name:'camel-jms', version:'2.13.2']]
+
+ext.activemq=[[group:'org.apache.activemq', name:'activemq-spring', version:'5.14.2'],
+              [group:'org.apache.activemq', name:'activemq-pool', version:'5.14.2']]
+
+ext.atomikos=[[group:'com.atomikos', name:'transactions-jta', version:'4.0.1'],
+				[group:'com.atomikos', name:'transactions-jms', version:'4.0.1'],
+              [group:'com.atomikos', name:'transactions-hibernate3', version:'4.0.1']]
+              
+ext.hsqldb=[group:'org.hsqldb', name:'hsqldb', version:'2.3.2']
+
+ext.jta=[[group:'javax.transaction', name: 'jta', version: "1.1"]]
+
+ext.compileDep=[spring, slf4j, log4j2]
+ext.testDep=[compileDep, junit, activemq, atomikos, jta, aspectj]
+ext.testRun=[hsqldb]
+ext.providedCompileDep=[servlet]
