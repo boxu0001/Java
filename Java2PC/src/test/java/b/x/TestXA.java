@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
@@ -24,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:test-config.xml" })
 public class TestXA {
+	
+	private static Logger _LOG = LoggerFactory.getLogger(TestXA.class);
 
 	private static EmbeddedDatabase db;
 
@@ -98,11 +102,10 @@ public class TestXA {
 
 	@AfterTransaction
 	public void afterTest() throws JMSException {
-		System.out
-				.println("After trx counting = " + JdbcTestUtils.countRowsInTable(jdbcTemplate, "SAMPLE_SCHEMA.TESTA"));
+		_LOG.info("After trx counting = " + JdbcTestUtils.countRowsInTable(jdbcTemplate, "SAMPLE_SCHEMA.TESTA"));
 		TextMessage msg = (TextMessage) (jmsNoXATemplate.receive("test.qa"));
 		if (msg != null) {
-			System.out.println("After trx msg = " + msg.getText());
+			_LOG.info("After trx msg = " + msg.getText());
 		}
 	}
 

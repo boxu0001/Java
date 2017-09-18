@@ -35,7 +35,7 @@ ext.hsqldb=[group:'org.hsqldb', name:'hsqldb', version:'2.3.2']
 
 ext.jta=[[group:'javax.transaction', name: 'jta', version: "1.1"]]
 
-ext.compileDep=[spring, slf4j, log4j2]
-ext.testDep=[compileDep, junit, activemq, atomikos, jta, aspectj]
+ext.compileDep=[spring, slf4j, log4j2, activemq, atomikos, jta, aspectj]
+ext.testDep=[compileDep, junit ]
 ext.testRun=[hsqldb]
 ext.providedCompileDep=[servlet]

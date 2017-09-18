@@ -1,27 +1,18 @@
 package b.x;
 
-import javax.jms.Queue;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class ServiceBeanA {
 	
 	@Autowired
-	private PlatformTransactionManager transactionManager;
-
-	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
 	@Autowired
 	private JmsTemplate jmsTemplate;
-
-	@Autowired
-	private Queue testDestination;
 	
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;

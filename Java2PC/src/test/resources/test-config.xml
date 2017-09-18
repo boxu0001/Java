@@ -1,112 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context.xsd
 	 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 	 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 	 http://www.springframework.org/schema/jdbc https://www.springframework.org/jdbc/spring-jdbc.xsd">
 
-    <!-- enabling annotation driven configuration / -->
-    <context:annotation-config/>
+	<!-- enabling annotation driven configuration / -->
+	<context:annotation-config />
 
-    <bean id="transactionManager"
-          class="org.springframework.transaction.jta.JtaTransactionManager">
-        <property name="transactionManager" ref="atomikosTransactionManager"/>
-        <property name="userTransaction" ref="atomikosUserTransaction"/>
-    </bean>
+	<bean id="transactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager">
+		<property name="transactionManager" ref="atomikosTransactionManager" />
+		<property name="userTransaction" ref="atomikosUserTransaction" />
+	</bean>
 
 	<aop:config>
-	    <aop:pointcut id="allRepositoryMethods" expression="execution(* org.springframework.batch.core..*Repository+.*(..))"/>
-	    <aop:advisor advice-ref="txAdvice" pointcut-ref="allRepositoryMethods" />
+		<aop:pointcut id="allRepositoryMethods"
+			expression="execution(* org.springframework.batch.core..*Repository+.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="allRepositoryMethods" />
 	</aop:config>
 
-	<aop:aspectj-autoproxy/>
+	<aop:aspectj-autoproxy />
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	
+
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
-    	<tx:attributes>
-        <!-- advises all methods to use the default transaction settings and whatever is overridden here -->
-        <tx:method name="*" isolation="READ_COMMITTED" />
-    	</tx:attributes>
-	</tx:advice>    
+		<tx:attributes>
+			<!-- advises all methods to use the default transaction settings and whatever 
+				is overridden here -->
+			<tx:method name="*" isolation="READ_COMMITTED" />
+		</tx:attributes>
+	</tx:advice>
 
 	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
 		init-method="init" destroy-method="close">
-		<property name="forceShutdown" value="true"/>
+		<property name="forceShutdown" value="true" />
 	</bean>
 
-	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp" >
+	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
 		<property name="transactionTimeout" value="300"></property>
 	</bean>
- 
-    <!--<jdbc:embedded-database id="hsql" type="HSQL">-->
-    <!--<jdbc:script location="classpath:com/wcg/calms2cms/eod/init_schema.sql" />-->
-    <!--<jdbc:script location="classpath:com/wcg/calms2cms/eod/init_spring_batch.sql" />-->
-    <!--</jdbc:embedded-database>-->
 
-    <bean id="dataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init"  destroy-method="close">
-        <property name="uniqueResourceName" value="abcde" />
-        <property name="xaDataSourceClassName" value="org.hsqldb.jdbc.pool.JDBCXADataSource"/>
-        <property name="xaProperties">
-            <props>
-                <!-- <prop key="driverClassName">org.hsqldb.jdbc.JDBCDriver</prop> -->
-                <prop key="user">sa</prop>
-                <prop key="password"></prop>
-                <prop key="url">jdbc:hsqldb:mem:testdb</prop>
-            </props>
-        </property>
-    </bean>
+	<!--<jdbc:embedded-database id="hsql" type="HSQL"> -->
+	<!--<jdbc:script location="classpath:com/wcg/calms2cms/eod/init_schema.sql" 
+		/> -->
+	<!--<jdbc:script location="classpath:com/wcg/calms2cms/eod/init_spring_batch.sql" 
+		/> -->
+	<!--</jdbc:embedded-database> -->
 
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <constructor-arg ref="dataSource"/>
-    </bean>    
+	<bean id="dataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		init-method="init" destroy-method="close">
+		<property name="uniqueResourceName" value="abcde" />
+		<property name="xaDataSourceClassName" value="org.hsqldb.jdbc.pool.JDBCXADataSource" />
+		<property name="xaProperties">
+			<props>
+				<!-- <prop key="driverClassName">org.hsqldb.jdbc.JDBCDriver</prop> -->
+				<prop key="user">sa</prop>
+				<prop key="password"></prop>
+				<prop key="url">jdbc:hsqldb:mem:testdb</prop>
+			</props>
+		</property>
+	</bean>
 
-    <bean id="xaFactory" class="org.apache.activemq.ActiveMQXAConnectionFactory">
-        <constructor-arg name="brokerURL" value="vm://localhost?broker.persistent=false"/>
-    </bean>
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref="dataSource" />
+	</bean>
 
-    <!-- Pooled Spring connection factory -->
-    <bean id="jmsConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-        <constructor-arg>
-		    <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-		        <constructor-arg name="brokerURL" value="vm://localhost?broker.persistent=false"/>
-		    </bean>
-        </constructor-arg>
-    </bean>
 
-    <bean id="jmsXAConnectionFactory"
-      class="com.atomikos.jms.AtomikosConnectionFactoryBean"
-      init-method="init" destroy-method="close">
-      <property name="uniqueResourceName" value="amq1" />
-      <property name="xaConnectionFactory" ref="xaFactory" />
-      <property name="maxPoolSize" value="10" />
-      <property name="localTransactionMode" value="false" />
-    </bean>
 
-    <bean id="testDestination" class="org.apache.activemq.command.ActiveMQQueue">
-      <constructor-arg value="test.qa"/>
-    </bean>
+	<!-- Pooled Spring connection factory -->
+	<bean id="jmsConnectionFactory"
+		class="org.springframework.jms.connection.CachingConnectionFactory">
+		<constructor-arg>
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<constructor-arg name="brokerURL"
+					value="vm://localhost?broker.persistent=false" />
+			</bean>
+		</constructor-arg>
+	</bean>
 
-    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
-        <property name="connectionFactory" ref="jmsXAConnectionFactory"/>
-        <property name="receiveTimeout" value="500"/>
-        <property name="sessionTransacted" value="true"/>
-    </bean>
-    
-    <bean id="jmsNoXATemplate" class="org.springframework.jms.core.JmsTemplate">
-        <property name="connectionFactory" ref="jmsConnectionFactory"/>
-        <property name="receiveTimeout" value="500"/>
-        <property name="sessionTransacted" value="false"/>
-    </bean>
-    
-    
-    <bean id="beanTestA" name="beanTestA" class="b.x.ServiceBeanA"></bean>
+	<bean id="jmsXAConnectionFactory" class="com.atomikos.jms.AtomikosConnectionFactoryBean"
+		init-method="init" destroy-method="close">
+		<property name="uniqueResourceName" value="activeMQ" />
+		<property name="xaConnectionFactory">
+			<bean id="xaFactory" class="org.apache.activemq.ActiveMQXAConnectionFactory">
+				<constructor-arg name="brokerURL" value="vm://localhost?broker.persistent=false" />
+			</bean>
+		</property>
+		<property name="maxPoolSize" value="10" />
+		<property name="localTransactionMode" value="false" />
+	</bean>
+
+	<bean id="testDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="test.qa" />
+	</bean>
+
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsXAConnectionFactory" />
+		<property name="receiveTimeout" value="500" />
+		<property name="sessionTransacted" value="true" />
+	</bean>
+
+	<bean id="jmsNoXATemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="receiveTimeout" value="500" />
+		<property name="sessionTransacted" value="false" />
+	</bean>
+
+
+	<bean id="beanTestA" name="beanTestA" class="b.x.ServiceBeanA"></bean>
 </beans>
 
 
